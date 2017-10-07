@@ -4,7 +4,6 @@
 #include <numeric>
 #include <algorithm>
 #include <utility>
-#include <portaudio.h>
 #include <cmath>
 
 #include "Timebase.h"
@@ -84,58 +83,36 @@ void Audio::quit()
 }
 
 void Audio::run() {
-    PaError err = Pa_Initialize();
-    PaStream *stream = NULL;
+    m_format.setSampleRate(FrameRate);
+    m_format.setChannelCount(1);
+    m_format.setSampleSize(32);
+    m_format.setCodec("audio/pcm");
+    m_format.setByteOrder(QAudioFormat::LittleEndian);
+    m_format.setSampleType(QAudioFormat::Float);
 
-    if(err != paNoError) {
-        qDebug() << "Could not initialize PortAudio";
-        goto err;
+    QAudioDeviceInfo deviceInfo = QAudioDeviceInfo::defaultInputDevice();
+    if (!deviceInfo.isFormatSupported(m_format)) {
+        qWarning() << "Format not supported; using nearest";
+        m_format = deviceInfo.nearestFormat(m_format);
     }
 
-    PaStreamParameters inputParameters;
-    inputParameters.device = Pa_GetDefaultInputDevice();
-    if (inputParameters.device < 0) {
-        qWarning() << "Could not find input device, running without";
-        while(m_run.load());
-        goto err;
-    }
-    inputParameters.channelCount = 1;
-    inputParameters.sampleFormat = paFloat32;
-    inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultHighInputLatency ;
-    inputParameters.hostApiSpecificStreamInfo = NULL;
+    m_audio = new QAudioInput(deviceInfo, m_format, this);
+    m_audioDevice = m_audio->start();
+    qInfo() << "Using audio device" << deviceInfo.deviceName() << "format" << m_format
+            << "interval" << m_audio->notifyInterval() << "period size" << m_audio->periodSize();
 
-    err = Pa_OpenStream(&stream,
-                        &inputParameters,
-                        0,
-                        FrameRate,
-                        ChunkSize,
-                        paClipOff,
-                        0,
-                        0);
-    if(err != paNoError) {
-        qDebug() << "Could not open PortAudio input stream";
-        goto err;
-    }
-
-    err = Pa_StartStream(stream);
-    if(err != paNoError) {
-        qDebug() << "Could not open audio input stream";
-        goto err;
-    }
-
-    while(m_run.load()) {
-        err = Pa_ReadStream(stream, &chunk[0], ChunkSize);
-        if(err != paNoError) {
-            qDebug() << "Could not read audio chunk";
-            continue;
+    static const qint64 chunkBytes = ChunkSize * sizeof(float);
+    while (m_run) {
+        m_audioDevice->startTransaction();
+        qint64 len = m_audioDevice->read(reinterpret_cast<char*>(chunk.data()), chunkBytes);
+        if (len == chunkBytes) {
+            m_audioDevice->commitTransaction();
+            analyzeChunk();
+        } else {
+            m_audioDevice->rollbackTransaction();
+            msleep(5); // 512 samples is about 11.6 msec @ 44100 sample rate
         }
-        analyzeChunk();
-        //qDebug() << "read chunk" << m_chunk;
     }
-
-err:
-    err = Pa_Terminate();
-    if(err != paNoError) qDebug() << "Could not cleanly terminate PortAudio";
 }
 
 double Audio::hannWindow(int n) {

@@ -7,6 +7,7 @@
 #include <atomic>
 #include <vector>
 #include <memory>
+#include <QtMultimedia/QAudioInput>
 #include <fftw3.h>
 #include <QOpenGLFunctions>
 #include <QOpenGLTexture>
@@ -39,6 +40,9 @@ protected:
 private:
     std::atomic<bool> m_run{true};
     Timebase *m_timebase;
+    QAudioInput *m_audio = nullptr;
+    QIODevice *m_audioDevice = nullptr;
+    QAudioFormat m_format;
 
     size_type m_size{2048};
     size_type m_coef{m_size ? (m_size/2 + 1) : 0};

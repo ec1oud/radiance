@@ -29,7 +29,7 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Quick REQUIRED)
 find_package(Qt5Qml REQUIRED)
 find_package(Qt5Gui REQUIRED)
-find_package(PortAudio REQUIRED)
+find_package(Qt5Multimedia REQUIRED)
 find_package(FFTW REQUIRED)
 find_package(SampleRate REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -75,9 +75,9 @@ list(APPEND radiance_LIBRARIES
     Qt5::Quick
     Qt5::Qml
     Qt5::Gui
+    Qt5::Multimedia
     ${FFTW_LIBRARIES}
     ${SAMPLERATE_LIBRARIES}
-    ${PORTAUDIO_LIBRARIES}
     ${OPENGL_LIBRARIES}
     )
 
@@ -89,13 +89,12 @@ set_property(
 
 include_directories(${FFTW_INCLUDE_DIRS})
 include_directories(${SAMPLERATE_INCLUDE_DIRS})
-include_directories(${PORTAUDIO_INCLUDE_DIRS})
 
 if(RtMidi_FOUND AND NOT WITHOUT_RTMIDI)
     add_definitions( -DUSE_RTMIDI )
     include_directories(${RTMIDI_INCLUDE_DIRS})
     list(APPEND libradiance_SOURCES src/MidiController.cpp)
-    list(APPEND radiance_LIBRARIES ${RTMIDI_LIBRARIES} ${PORTAUDIO_LIBRARIES})
+    list(APPEND radiance_LIBRARIES ${RTMIDI_LIBRARIES})
 endif()
 
 if(MPV_FOUND AND NOT WITHOUT_MPV)
