@@ -122,6 +122,12 @@ ApplicationWindow {
                         SettingsWidget {
                             id: settings
                             anchors.fill: parent
+                            onDoubleTapped: {
+                                console.log("Loading state from " + modelName);
+                                model.clear();
+                                model.load(defaultContext, registry, modelName);
+                                model.flush();
+                            }
                         }
                     }
                     PopOut {
@@ -171,12 +177,13 @@ ApplicationWindow {
 
     function save() {
         if (model.vertices.length >= 0) {
+            console.log("Saving state to " + modelName)
             model.save(modelName);
         }
     }
 
     function load() {
-        console.log("Loading state from file...");
+        console.log("Importing state from " + modelName);
         model.load(defaultContext, registry, modelName);
         model.flush();
     }
