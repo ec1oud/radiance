@@ -15,10 +15,5 @@ TextField {
         color: RadianceStyle.tileBackgroundColor
         border.color: control.visualFocus ? RadianceStyle.tileLineHighlightColor : RadianceStyle.tileLineColor
         border.width: 1
-
-        gradient: Gradient {
-            GradientStop { position: 0 ; color: control.colorLight }
-            GradientStop { position: 0.5 ; color: control.colorDark }
-        }
     }
 }

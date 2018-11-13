@@ -7,7 +7,7 @@ import "."
 
 Item {
     id: settingsWidget
-    property alias modelName: modelNameTextInput.text
+    property alias modelName: modelNameField.text
 
     ColumnLayout {
         anchors.fill: parent
@@ -39,8 +39,8 @@ Item {
                 color: RadianceStyle.mainTextColor
             }
 
-            TextInput {
-                id: modelNameTextInput
+            TextField {
+                id: modelNameField
                 text: "model.json"
             }
         }
