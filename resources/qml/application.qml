@@ -6,7 +6,7 @@ import radiance 1.0
 import "."
 
 ApplicationWindow {
-    id: window;
+    id: window
     visible: true
     color: RadianceStyle.mainBackgroundColor
     width: 800
@@ -55,9 +55,15 @@ ApplicationWindow {
     ColumnLayout {
         anchors.fill: parent
 
-        Item {
+        DropArea {
+            id: mainCanvas
             Layout.fillWidth: true;
             Layout.fillHeight: true;
+            onDropped: {
+                console.log("dropped " + drag.source.text)
+                libraryWidget.addSelected()
+            }
+
             Graph {
                 id: graph
                 model: model
