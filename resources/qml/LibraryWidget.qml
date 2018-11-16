@@ -59,16 +59,6 @@ Item {
             text: styleData.value
             verticalAlignment: Text.AlignVCenter
 
-            Drag.active: dragHandler.active
-            Drag.dragType: Drag.Automatic
-            Drag.mimeData: { "text/plain": row.text }
-            Drag.hotSpot.x: width / 2
-            Drag.hotSpot.y: height / 2
-            Component.onCompleted: grabToImage(function(result) {
-                // too early: the image is stretched (oh well)
-                Drag.imageSource = result.url
-            })
-
             function selectThisRow() {
                 selModel.clearCurrentIndex();
                 selModel.setCurrentIndex(styleData.index, ItemSelectionModel.SelectCurrent);
@@ -78,12 +68,14 @@ Item {
                 id: dragHandler
                 enabled: !styleData.hasChildren
                 target: null
-                onActiveChanged: if (active) selectThisRow()
-
-// too late (the drag has already started):
-//                onActiveChanged: if (active) row.grabToImage(function(result) {
-//                    row.Drag.imageSource = result.url
-//                })
+                onTargetChanged: console.log("set target to " + target)
+                onActiveChanged: if (active) {
+                        selectThisRow()
+                        target = addSelected()
+                        target.externalDragActive = true
+                    } else if (target) {
+                        target.externalDragActive = false
+                    }
             }
 
             TapHandler {
@@ -162,6 +154,7 @@ Item {
     }
 
     function addSelected() {
+        var ret = null;
         var filename = librarytree.model.data(librarytree.selection.currentIndex, Library.FileRole);
 
         if (filename.substr(-4) === ".qml") {
@@ -190,10 +183,11 @@ Item {
         } else {
             var vn = registry.createFromFile(context, filename);
             if (vn) {
-                graph.insertVideoNode(vn);
+                ret = graph.insertVideoNode(vn);
             }
         }
         stopSearching();
+        return ret;
     }
 
     Action {

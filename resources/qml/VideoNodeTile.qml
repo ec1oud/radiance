@@ -20,6 +20,10 @@ BaseVideoNodeTile {
     property var inputArrows
     property real outputArrow
 
+    property bool externalDragActive: false
+
+    onExternalDragActiveChanged: onDragActiveChanged(externalDragActive)
+
     normalHeight: 130
     normalWidth: 80
     minInputHeight: normalHeight
@@ -87,7 +91,7 @@ BaseVideoNodeTile {
 
     Drag.keys: [ "videonode" ]
     Drag.hotSpot: Qt.point(width / 2, height / 2)
-    Drag.active: dragArea.drag.active;
+    Drag.active: dragArea.drag.active || externalDragActive
 
     states: [
         State {
@@ -254,6 +258,15 @@ BaseVideoNodeTile {
         view.parent.lastClickedTile = tile;
     }
 
+    function onDragActiveChanged(active) {
+        view.ensureSelected(tile);
+        if (active) {
+            dragLift();
+        } else {
+            dragDrop();
+        }
+    }
+
     KeyNavigation.tab: tab;
     KeyNavigation.backtab: backtab;
 
@@ -274,14 +287,7 @@ BaseVideoNodeTile {
             }
         }
 
-        drag.onActiveChanged: {
-            view.ensureSelected(tile);
-            if (drag.active) {
-                dragLift();
-            } else {
-                dragDrop();
-            }
-        }
+        drag.onActiveChanged: onDragActiveChanged(drag.active)
 
         drag.target: tile;
     }

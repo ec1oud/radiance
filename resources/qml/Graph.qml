@@ -29,7 +29,9 @@ Item {
             model.addEdge(lastClickedTile.videoNode, videoNode, 0);
         }
         model.flush();
-        view.tileForVideoNode(videoNode).forceActiveFocus();
+        var ret = view.tileForVideoNode(videoNode);
+        ret.forceActiveFocus();
+        return ret;
     }
 
     Flickable {

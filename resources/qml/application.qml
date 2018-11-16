@@ -60,8 +60,8 @@ ApplicationWindow {
             Layout.fillWidth: true;
             Layout.fillHeight: true;
             onDropped: {
+                // for dropping from external apps only
                 console.log("dropped " + drag.source.text)
-                libraryWidget.addSelected()
             }
 
             Graph {

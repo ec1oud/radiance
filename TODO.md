@@ -1,7 +1,7 @@
 -[x] load/save (but not via FileDialog: just show a list of every saved scene)
 -[ ] scaling RadianceTileTitle to make the text fit: not so bad with QT_AUTO_SCREEN_SCALE_FACTOR
 -[ ] reorganize palette: icon grid, organized by source, operator, multi-input
--[ ] DnD from library toolbox
+-[x] DnD from library toolbox
 -[ ] touch-friendly
 -[ ] some tiles with color palettes rather than fixed colors
 -[ ] Qt logos (especially the old 3D one)
