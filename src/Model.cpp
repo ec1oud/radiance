@@ -557,6 +557,8 @@ void Model::load(Context *context, Registry *registry, QString filename) {
 }
 
 void Model::save(QString filename) {
+    if (!filename.endsWith(QLatin1String("json")))
+        filename += QLatin1String(".json");
     filename = Paths::ensureUserLibrary(filename);
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {
