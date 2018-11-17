@@ -90,6 +90,10 @@
             "type": "ImageNode"
         },
         {
+            "file": "images/qtlogo.svg",
+            "type": "ImageNode"
+        },
+        {
             "file": "effects/diodelpf.glsl",
             "intensity": 0.34769999999999984,
             "type": "EffectNode"
