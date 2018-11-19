@@ -96,7 +96,7 @@ GLuint EffectNode::paint(Chain chain, QVector<GLuint> inputTextures) {
         }
         //qDebug() << "Looking up" << chain << "in" << d()->m_renderStates << "of" << this;
         if (!d()->m_renderStates.contains(chain)) {
-            qDebug() << this << "does not have chain" << chain;
+//            qDebug() << typeName() << "does not have chain" << chain;
             return inputTextures.at(0);
         }
         renderState = d()->m_renderStates[chain];
