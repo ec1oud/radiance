@@ -25,6 +25,15 @@ uniform vec4  iAudio;
 #define iAudioHi    iAudio.z
 #define iAudioLevel iAudio.w
 
+// Audio waveform
+uniform sampler1D iWaveform;
+
+// Waveform beats
+uniform sampler1D iBeats;
+
+// Spectrum (FFT output)
+uniform sampler1D iSpectrum;
+
 // Resolution of the output pattern
 uniform vec2 iResolution;
 

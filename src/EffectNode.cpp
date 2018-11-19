@@ -151,23 +151,42 @@ GLuint EffectNode::paint(Chain chain, QVector<GLuint> inputTextures) {
             renderState->m_extra->bind();
             p->bind();
 
-            auto texCount = GL_TEXTURE0;
+            unsigned int texCount = 0;
             for (int k = 0; k < inputCount; k++) {
-                glActiveTexture(texCount++);
+                glActiveTexture(GL_TEXTURE0 + texCount);
                 glBindTexture(GL_TEXTURE_2D, inputTextures.at(k));
                 glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-
+                texCount++;
             }
 
-            glActiveTexture(texCount++);
+            glActiveTexture(GL_TEXTURE0 + texCount);
             glBindTexture(GL_TEXTURE_2D, chain.noiseTexture());
-            for(auto && op : renderState->m_passes) {
-                glActiveTexture(texCount++);
+            p->setUniformValue("iNoise", texCount++);
+
+            for (auto && op : renderState->m_passes) {
+                glActiveTexture(GL_TEXTURE0 + texCount);
                 glBindTexture(GL_TEXTURE_2D, op.m_output->texture());
                 glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+                texCount++;
             }
+
+            if (!context()->audio()->m_waveformTexture)
+                context()->audio()->renderGraphics(); // just make sure the textures are allocated
+
+            glActiveTexture(GL_TEXTURE0 + texCount);
+            glBindTexture(GL_TEXTURE_1D, context()->audio()->m_waveformTexture->textureId());
+            p->setUniformValue("iWaveform", texCount++);
+
+            glActiveTexture(GL_TEXTURE0 + texCount);
+            glBindTexture(GL_TEXTURE_1D, context()->audio()->m_waveformBeatsTexture->textureId());
+            p->setUniformValue("iBeats", texCount++);
+
+            glActiveTexture(GL_TEXTURE0 + texCount);
+            glBindTexture(GL_TEXTURE_1D, context()->audio()->m_spectrumTexture->textureId());
+            p->setUniformValue("iSpectrum", texCount++);
+
             auto intense = qreal(intensity());
             p->setUniformValue("iIntensity", GLfloat(intense));
             p->setUniformValue("iIntensityIntegral", GLfloat(intensityIntegral));
