@@ -62,6 +62,7 @@ VideoNodeTile {
         if (!videoNode.shown) {
             updateScreenSelector();
             updateResolutionSelector();
+            visibleCheck.checked = view.defaultScreenOn
         }
         videoNode.shown = Qt.binding(function() { return visibleCheck.checked });
     }
@@ -146,6 +147,7 @@ VideoNodeTile {
             CheckBox {
                 id: visibleCheck
                 text: "Visible"
+                onCheckedChanged: view.defaultScreenOn = checked
             }
         }
     }
