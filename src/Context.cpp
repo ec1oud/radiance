@@ -46,6 +46,15 @@ void Context::setInputDeviceId(QString inputDeviceId) {
     emit inputDeviceIdChanged();
 }
 
+void Context::setDefaultScreenId(QString defaultScreenId)
+{
+    if (m_defaultScreenId == defaultScreenId)
+        return;
+
+    m_defaultScreenId = defaultScreenId;
+    emit defaultScreenIdChanged();
+}
+
 Context::~Context() {
     delete m_audio;
     delete m_timebase;

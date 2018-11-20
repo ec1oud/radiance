@@ -16,6 +16,7 @@ class OpenGLWorkerContext;
 class Context : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString inputDeviceId READ inputDeviceId WRITE setInputDeviceId NOTIFY inputDeviceIdChanged)
+    Q_PROPERTY(QString defaultScreenId READ defaultScreenId WRITE setDefaultScreenId NOTIFY defaultScreenIdChanged)
 
 public:
     Context(bool threaded=true);
@@ -29,11 +30,16 @@ public:
     QString inputDeviceId() const;
     void setInputDeviceId(QString inputDeviceId);
 
+    QString defaultScreenId() const { return m_defaultScreenId; }
+    void setDefaultScreenId(QString defaultScreenId);
+
 signals:
     void inputDeviceIdChanged();
+    void defaultScreenIdChanged();
 
 protected:
     bool m_threaded;
+    QString m_defaultScreenId;
     Audio *m_audio;
     Timebase *m_timebase;
     OpenGLWorkerContext *m_openGLWorkerContext;

@@ -45,6 +45,20 @@ Item {
             source: window.hasMidi ? "MidiMappingSelector.qml" : ""
             onLoaded: item.target = graph.view;
         }
+
+        Label {
+            text: "Default output:"
+            color: RadianceStyle.mainTextColor
+            visible: window.hasMidi
+        }
+        ComboBox {
+            id: screensCB
+            Layout.fillWidth: true
+            model: Qt.application.screens
+            textRole: "name"
+            onCurrentTextChanged: defaultContext.defaultScreenId = currentText
+        }
+
         Item { height: 10 }
 
         RowLayout {

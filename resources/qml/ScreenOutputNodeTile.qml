@@ -19,6 +19,9 @@ VideoNodeTile {
             strList.push(l[i].width + "x" + l[i].height);
         }
         var currentRes = videoNode.resolution.width + "x" + videoNode.resolution.height;
+        for (var i = 0; i < Qt.application.screens.length; ++i)
+            if (Qt.application.screens[i].name === videoNode.screenName)
+                currentRes = Qt.application.screens[i].width + "x" + Qt.application.screens[i].height;
         if (strList.indexOf(currentRes) < 0) {
             strList.unshift(currentRes);
         }
@@ -39,7 +42,7 @@ VideoNodeTile {
         for (var i=0; i<l.length; i++) {
             strList.push(l[i]);
         }
-        var n = tile.videoNode.screenName;
+        var n = defaultContext.defaultScreenId;
         if (strList.indexOf(n) < 0) {
             strList.unshift(n);
         }
@@ -49,6 +52,7 @@ VideoNodeTile {
         var i = strList.indexOf(n);
         if (i >= 0) {
             screenSelector.currentIndex = i;
+            videoNode.screenName = n;
         }
         updatingScreenSelector = false;
     }
