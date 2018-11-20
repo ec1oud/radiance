@@ -26,6 +26,8 @@ public:
     using difference_type = std::vector<float>::difference_type;
     Audio(Timebase *timebase);
    ~Audio() override;
+    QString inputDeviceId();
+    void setInputDeviceId(QString deviceId);
     double time();
     void levels(double *audioHi, double *audioMid, double *audioLow, double *audioLevel);
     void renderGraphics();
@@ -40,6 +42,8 @@ protected:
 private:
     std::atomic<bool> m_run{true};
     Timebase *m_timebase;
+    QString m_audioDeviceId;
+    bool m_audioDeviceIdChanged = true;
     QAudioInput *m_audio = nullptr;
     QIODevice *m_audioDevice = nullptr;
     QAudioFormat m_format;

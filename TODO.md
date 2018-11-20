@@ -6,7 +6,7 @@
 -[ ] touch-friendly
 -[ ] some tiles with color palettes rather than fixed colors
 -[ ] Qt logos (especially the old 3D one)
--[ ] input control
+-[x] input control
 -[ ] spectrum analyzer
 -[ ] that starburst thing
 -[ ] bubbles

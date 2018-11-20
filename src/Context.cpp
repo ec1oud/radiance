@@ -33,6 +33,19 @@ OpenGLWorkerContext *Context::openGLWorkerContext() {
     return m_openGLWorkerContext;
 }
 
+QString Context::inputDeviceId() const {
+    return m_audio->inputDeviceId();
+}
+
+void Context::setInputDeviceId(QString inputDeviceId) {
+    if (m_audio->inputDeviceId() == inputDeviceId)
+        return;
+    qDebug() << inputDeviceId;
+
+    m_audio->setInputDeviceId(inputDeviceId);
+    emit inputDeviceIdChanged();
+}
+
 Context::~Context() {
     delete m_audio;
     delete m_timebase;

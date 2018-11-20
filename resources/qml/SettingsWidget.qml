@@ -1,4 +1,5 @@
 import QtQuick 2.12
+import QtMultimedia 5.13
 import QtQuick.Layouts 1.2
 import QtQuick.Controls 1.4
 import QtQml.Models 2.2
@@ -14,6 +15,23 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
+
+        Label {
+            text: "Input device:"
+            color: RadianceStyle.mainTextColor
+            visible: window.hasMidi
+        }
+        ComboBox {
+            id: devicesCB
+            Layout.fillWidth: true
+            model: QtMultimedia.availableAudioInputDevices
+            textRole: "deviceId"
+            function setDefault() {
+                devicesCB.currentIndex = model.findIndex(i => i.deviceId === QtMultimedia.defaultAudioInputDevice.deviceId);
+            }
+            onModelChanged: setDefault()
+            onCurrentTextChanged: defaultContext.inputDeviceId = currentText
+        }
 
         Label {
             text: "MIDI controller:"

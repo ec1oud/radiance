@@ -77,6 +77,17 @@ Audio::~Audio()
     */
 }
 
+QString Audio::inputDeviceId()
+{
+    return m_audioDeviceId;
+}
+
+void Audio::setInputDeviceId(QString deviceId)
+{
+    m_audioDeviceId = deviceId;
+    m_audioDeviceIdChanged = true;
+}
+
 void Audio::quit()
 {
     m_run = false;
@@ -90,27 +101,44 @@ void Audio::run() {
     m_format.setByteOrder(QAudioFormat::LittleEndian);
     m_format.setSampleType(QAudioFormat::Float);
 
-    QAudioDeviceInfo deviceInfo = QAudioDeviceInfo::defaultInputDevice();
-    if (!deviceInfo.isFormatSupported(m_format)) {
-        qWarning() << "Format not supported; using nearest";
-        m_format = deviceInfo.nearestFormat(m_format);
-    }
-
-    m_audio = new QAudioInput(deviceInfo, m_format, this);
-    m_audioDevice = m_audio->start();
-    qInfo() << "Using audio device" << deviceInfo.deviceName() << "format" << m_format
-            << "interval" << m_audio->notifyInterval() << "period size" << m_audio->periodSize();
-
     static const qint64 chunkBytes = ChunkSize * sizeof(float);
     while (m_run) {
-        m_audioDevice->startTransaction();
-        qint64 len = m_audioDevice->read(reinterpret_cast<char*>(chunk.data()), chunkBytes);
-        if (len == chunkBytes) {
-            m_audioDevice->commitTransaction();
-            analyzeChunk();
+        if (m_audioDeviceIdChanged) {
+            m_audioDeviceIdChanged = false;
+            QAudioDeviceInfo deviceInfo = QAudioDeviceInfo::defaultInputDevice();
+            QString id = m_audioDeviceId;
+            QList<QAudioDeviceInfo> devices = QAudioDeviceInfo::availableDevices(QAudio::AudioInput);
+            auto it = std::find_if(devices.constBegin(), devices.constEnd(),
+                                   [id] (const QAudioDeviceInfo &di) { return di.deviceName() == id; });
+            if (it != devices.constEnd())
+                deviceInfo = *it;
+
+            if (!deviceInfo.isFormatSupported(m_format)) {
+                m_format = deviceInfo.nearestFormat(m_format);
+                qWarning() << "Format not supported; using nearest";
+            }
+            if (m_audio) {
+                m_audio->stop();
+                delete m_audio;
+            }
+            m_audio = new QAudioInput(deviceInfo, m_format, this);
+            m_audioDevice = m_audio->start();
+            qInfo() << "Using audio device" << deviceInfo.deviceName() << "format" << m_format
+                    << "interval" << m_audio->notifyInterval() << "period size" << m_audio->periodSize();
+        }
+
+        if (m_audioDevice) {
+            m_audioDevice->startTransaction();
+            qint64 len = m_audioDevice->read(reinterpret_cast<char*>(chunk.data()), chunkBytes);
+            if (len == chunkBytes) {
+                m_audioDevice->commitTransaction();
+                analyzeChunk();
+            } else {
+                m_audioDevice->rollbackTransaction();
+                msleep(5); // 512 samples is about 11.6 msec @ 44100 sample rate
+            }
         } else {
-            m_audioDevice->rollbackTransaction();
-            msleep(5); // 512 samples is about 11.6 msec @ 44100 sample rate
+            msleep(100);
         }
     }
 }
