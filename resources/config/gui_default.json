@@ -76,6 +76,11 @@
             "type": "EffectNode"
         },
         {
+            "file": "effects/tunls.glsl",
+            "intensity": 0.5,
+            "type": "EffectNode"
+        },
+        {
             "file": "effects/uvmap.glsl",
             "intensity": 0.1,
             "type": "EffectNode"
