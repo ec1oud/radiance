@@ -15,4 +15,4 @@
 -[ ] flying toasters?
 -[ ] text
 -[ ] water
--[ ] silhouette dancers
+-[x] silhouette dancers
